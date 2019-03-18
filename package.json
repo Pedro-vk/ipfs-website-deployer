@@ -1,0 +1,30 @@
+{
+  "name": "ipfs-website-deployer",
+  "version": "0.0.0",
+  "description": "Simple IPFS website deployer.",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "lint": "tslint --project tsconfig.json",
+    "test": "mocha -r ts-node/register src/**/*.spec.ts"
+  },
+  "keywords": [
+    "ipfs",
+    "ens",
+    "ethereum",
+    "website",
+    "deploy",
+    "website"
+  ],
+  "author": "Pedro Gutiérrez",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/chai": "^4.1.7",
+    "@types/mocha": "^5.2.6",
+    "@types/node": "^11.11.3",
+    "chai": "^4.2.0",
+    "mocha": "^6.0.2",
+    "ts-node": "^8.0.3",
+    "typescript": "^3.3.3333"
+  }
+}

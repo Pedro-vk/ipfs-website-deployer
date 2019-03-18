@@ -1,0 +1,63 @@
+#################
+## Misc
+#################
+**/.DS_Store
+nbproject
+manifest.mf
+build.xml
+node_modules/*
+**/node_modules/*
+npm-debug.log
+*.ts
+!*.d.ts
+tests
+docs
+examples
+config
+.github
+.editorconfig
+.npmignore
+coverage
+!*.metadata.json
+!bundles/*.js
+.nyc_output
+
+#################
+## JetBrains
+#################
+.idea
+.project
+.settings
+
+############
+## Windows
+############
+
+# Windows image file caches
+Thumbs.db
+
+# Folder config file
+Desktop.ini
+
+############
+## Mac
+############
+
+# Mac crap
+.DS_Store
+
+# Project
+src/
+scripts/
+e2e/
+sass/app.component.scss
+angular-cli.json
+karma.conf.js
+./protractor.conf.js
+tslint.json
+.sass-lint.yml
+Dockerfile
+docker-compose.yml
+tsconfig.json
+README.md
+CHANGELOG.md
