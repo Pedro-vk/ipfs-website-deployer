@@ -1,4 +1,6 @@
-import ipfsHttpClient from 'ipfs-http-client'
+import ipfsHttpClient from 'ipfs-http-client';
+import glob from 'glob';
+import fs from 'fs';
 
 export interface IpfsDeployerConfig {
   host: string;
@@ -12,9 +14,12 @@ export interface IpfsDeployerFile {
 }
 
 export interface IpfsDeployerResult {
-  path: string;
-  hash: string;
-  size: number;
+  rootHash: string;
+  files: {
+    path: string;
+    hash: string;
+    size: number;
+  }[];
 }
 
 const defaultConfig: IpfsDeployerConfig = {
@@ -30,7 +35,7 @@ export class IpfsDeployer {
     this.ipfs = new ipfsHttpClient(Object.assign({}, defaultConfig, config));
   }
 
-  async deployFiles(files: IpfsDeployerFile[]): Promise<{rootHash: string, files: IpfsDeployerResult[]}> {
+  async deployFiles(files: IpfsDeployerFile[]): Promise<IpfsDeployerResult> {
     const root = "root";
     const results = await this.ipfs
       .add(
@@ -38,5 +43,20 @@ export class IpfsDeployer {
       );
     const rootHash = results.find(({path}) => path === root).hash;
     return {rootHash, files: results};
+  }
+
+  async deployFolder(path: string): Promise<IpfsDeployerResult> {
+    const paths: string[] = await new Promise((resolve, reject) => {
+      glob(`${path}/**`, (error, matches) => error ? reject(error) : resolve(matches));
+    });
+
+    const files = paths
+      .filter(_ => _ !== path)
+      .map(_ => ({
+        path: _.replace(`${path}/`, ''),
+        content: fs.readFileSync(_),
+      }))
+
+    return await this.deployFiles(files)
   }
 }
