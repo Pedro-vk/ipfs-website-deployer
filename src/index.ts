@@ -1,1 +1,1 @@
-export * from './ipfs-deployer'
+export * from './ipfs-deployer';

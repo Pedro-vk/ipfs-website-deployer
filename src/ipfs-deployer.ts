@@ -1,6 +1,6 @@
-import ipfsHttpClient from 'ipfs-http-client';
-import glob from 'glob';
 import fs from 'fs';
+import glob from 'glob';
+import ipfsHttpClient from 'ipfs-http-client';
 
 export interface IpfsDeployerConfig {
   host: string;
@@ -15,31 +15,31 @@ export interface IpfsDeployerFile {
 
 export interface IpfsDeployerResult {
   rootHash: string;
-  files: {
+  files: Array<{
     path: string;
     hash: string;
     size: number;
-  }[];
+  }>;
 }
 
 const defaultConfig: IpfsDeployerConfig = {
   host: 'ipfs.infura.io',
   port: 5001,
-  protocol: 'https'
-}
+  protocol: 'https',
+};
 
 export class IpfsDeployer {
   private ipfs: any;
 
   constructor(config: Partial<IpfsDeployerConfig> = {}) {
-    this.ipfs = new ipfsHttpClient(Object.assign({}, defaultConfig, config));
+    this.ipfs = new ipfsHttpClient({...defaultConfig, ...config});
   }
 
   async deployFiles(files: IpfsDeployerFile[]): Promise<IpfsDeployerResult> {
-    const root = "root";
+    const root = 'root';
     const results = await this.ipfs
       .add(
-        files.map(file => ({...file, path: `/${root}/${file.path}`})),
+        files.map((file) => ({...file, path: `/${root}/${file.path}`})),
       );
     const rootHash = results.find(({path}) => path === root).hash;
     return {rootHash, files: results};
@@ -51,12 +51,12 @@ export class IpfsDeployer {
     });
 
     const files = paths
-      .filter(_ => _ !== path)
-      .map(_ => ({
+      .filter((_) => _ !== path)
+      .map((_) => ({
         path: _.replace(`${path}/`, ''),
         content: fs.readFileSync(_),
-      }))
+      }));
 
-    return await this.deployFiles(files)
+    return this.deployFiles(files);
   }
 }
