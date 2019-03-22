@@ -3,6 +3,14 @@
   "version": "0.1.0",
   "description": "Simple IPFS website deployer.",
   "main": "dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pedro-vk/ipfs-website-deployer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Pedro-vk/ipfs-website-deployer/issues"
+  },
+  "homepage": "https://github.com/Pedro-vk/ipfs-website-deployer#readme",
   "bin": {
     "ipfs-website-deployer": "dist/ipfs-website-deployer-cli.js"
   },

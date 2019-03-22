@@ -10,6 +10,7 @@ deploy:
   provider: npm
   email: pedrogp9693@gmail.com
   api_key: ${NPM_TOKEN}
+  skip_cleanup: true
   on:
     tags: true
     repo: Pedro-vk/ipfs-website-deployer
