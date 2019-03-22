@@ -9,7 +9,7 @@
   "scripts": {
     "build": "tsc",
     "lint": "tslint --project tsconfig.json",
-    "test": "mocha -r ts-node/register src/**/*.spec.ts",
+    "test": "mocha --timeout 10000 -r ts-node/register src/**/*.spec.ts",
     "test:watch": "npm run test -- --watch --watch-extensions ts"
   },
   "keywords": [
