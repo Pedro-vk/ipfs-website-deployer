@@ -24,6 +24,6 @@ describe('ipfs-website-deployer-cli', () => {
 
     assert.isDefined(result);
     assert.match(result.rootHash, /^[a-z0-9]{46}$/i);
-    assert.instanceOf(result.files, Array);
+    assert.instanceOf(result.nodes, Array);
   });
 });

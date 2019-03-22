@@ -51,7 +51,7 @@ async function deploy(
       console.log(result.rootHash);
       break;
     default:
-      console.log(`Deployed ${result.files.length} nodes.`);
+      console.log(`Deployed ${result.nodes.length} nodes.`);
       console.log(`Root hash: ${result.rootHash}`);
       break;
   }

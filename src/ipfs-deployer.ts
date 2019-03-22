@@ -15,11 +15,11 @@ export interface IpfsDeployerFile {
 
 export interface IpfsDeployerResult {
   rootHash: string;
-  files: Array<{
+  nodes: {
     path: string;
     hash: string;
     size: number;
-  }>;
+  }[];
 }
 
 const defaultConfig: IpfsDeployerConfig = {
@@ -36,13 +36,17 @@ export class IpfsDeployer {
   }
 
   async deployFiles(files: IpfsDeployerFile[]): Promise<IpfsDeployerResult> {
-    const root = 'root';
-    const results = await this.ipfs
+    let results = await this.ipfs
       .add(
-        files.map((file) => ({...file, path: `/${root}/${file.path}`})),
+        files.map((file) => ({...file, path: `root/${file.path}`})),
       );
-    const rootHash = results.find(({path}) => path === root).hash;
-    return {rootHash, files: results};
+    results = results
+      .map((file) => ({
+        ...file,
+        path: file.path.replace(/^root\/?/, './'),
+      }));
+    const rootHash = results.find(({path}) => path === './').hash;
+    return {rootHash, nodes: results};
   }
 
   async deployFolder(path: string): Promise<IpfsDeployerResult> {

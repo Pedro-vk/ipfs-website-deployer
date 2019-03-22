@@ -19,7 +19,7 @@ describe('IpfsDeployer', () => {
     const result = await ipfsDeployer.deployFiles(files);
 
     assert.match(result.rootHash, /^[a-z0-9]{46}$/i);
-    assert.equal(result.files.length, files.length + 1);
+    assert.equal(result.nodes.length, files.length + 1);
   });
 
   it('should deploy the files of a directory', async () => {
@@ -28,6 +28,6 @@ describe('IpfsDeployer', () => {
     const result = await ipfsDeployer.deployFolder('src');
 
     assert.match(result.rootHash, /^[a-z0-9]{46}$/i);
-    assert.isAtLeast(result.files.length, 3);
+    assert.isAtLeast(result.nodes.length, 3);
   });
 });
