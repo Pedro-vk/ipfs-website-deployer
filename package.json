@@ -1,6 +1,6 @@
 {
   "name": "ipfs-website-deployer",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Simple IPFS website deployer.",
   "main": "dist/index.js",
   "repository": {
