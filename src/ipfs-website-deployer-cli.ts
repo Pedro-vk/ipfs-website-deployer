@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import program from 'commander';
+import 'colors';
 import { IpfsDeployer } from './ipfs-deployer';
 
 // tslint:disable-next-line
@@ -51,8 +52,9 @@ async function deploy(
       console.log(result.rootHash);
       break;
     default:
-      console.log(`Deployed ${result.nodes.length} nodes.`);
-      console.log(`Root hash: ${result.rootHash}`);
+      console.log(`Deployed ${String(result.nodes.length).red.bold} nodes.`);
+      console.log(`Root hash: ${result.rootHash.green.bold}`);
+      console.log('You can see the website here:\n  ', `https://ipfs.io/ipfs/${result.rootHash}/`.bold)
       break;
   }
 }

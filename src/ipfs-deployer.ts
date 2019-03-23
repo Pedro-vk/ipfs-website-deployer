@@ -50,7 +50,7 @@ export class IpfsDeployer {
   }
 
   async deployFolder(path: string): Promise<IpfsDeployerResult> {
-    path = path.replace(/^\//, '').replace(/\/$/, '');
+    path = path.replace(/\/$/, '');
     const paths: string[] = await new Promise((resolve, reject) => {
       glob(`${path}/**`, (error, matches) => error ? reject(error) : resolve(matches));
     });
