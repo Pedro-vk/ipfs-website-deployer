@@ -1,5 +1,3 @@
-import fs from 'fs';
-import glob from 'glob';
 import ipfsHttpClient from 'ipfs-http-client';
 
 export interface IpfsDeployerConfig {
@@ -13,13 +11,15 @@ export interface IpfsDeployerFile {
   content?: Buffer;
 }
 
+export interface IpfsDeployerNode {
+  path: string;
+  hash: string;
+  size: number;
+}
+
 export interface IpfsDeployerResult {
   rootHash: string;
-  nodes: {
-    path: string;
-    hash: string;
-    size: number;
-  }[];
+  nodes: IpfsDeployerNode[];
 }
 
 const defaultConfig: IpfsDeployerConfig = {
@@ -40,28 +40,23 @@ export class IpfsDeployer {
       .add(
         files.map((file) => ({...file, path: `root/${file.path}`})),
       );
-    results = results
-      .map((file) => ({
-        ...file,
-        path: file.path.replace(/^root\/?/, './'),
-      }));
-    const rootHash = results.find(({path}) => path === './').hash;
-    return {rootHash, nodes: results};
+    return this.getResultFromListOfFiles(results);
   }
 
   async deployFolder(path: string): Promise<IpfsDeployerResult> {
-    path = path.replace(/\/$/, '');
-    const paths: string[] = await new Promise((resolve, reject) => {
-      glob(`${path}/**`, (error, matches) => error ? reject(error) : resolve(matches));
-    });
+    const results = await this.ipfs.addFromFs(path, {recursive: true})
+    return this.getResultFromListOfFiles(results);
+  }
 
-    const files = paths
-      .filter((_) => _ !== path)
-      .map((_) => ({
-        path: _.replace(`${path}/`, ''),
-        content: fs.readFileSync(_),
+  private getResultFromListOfFiles(nodes: IpfsDeployerNode[]): IpfsDeployerResult {
+    const rootFolder = (nodes[0].path.match(/^([^\/]+)/) as any)[0]
+    nodes = nodes
+      .map((file) => ({
+        ...file,
+        path: file.path.replace(new RegExp(`^${rootFolder}\/?`), './'),
       }));
-
-    return this.deployFiles(files);
+    const root = nodes.find(({path}) => path === './')
+    const rootHash = (root || {} as any).hash;
+    return {rootHash, nodes};
   }
 }
