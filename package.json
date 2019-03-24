@@ -33,6 +33,7 @@
   "dependencies": {
     "colors": "^1.3.3",
     "commander": "^2.19.0",
+    "glob": "^7.1.3",
     "ipfs-http-client": "^30.1.0"
   },
   "devDependencies": {
