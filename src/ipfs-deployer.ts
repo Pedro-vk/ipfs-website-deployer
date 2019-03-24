@@ -68,6 +68,7 @@ export class IpfsDeployer {
     }
     const total = filesNumber || await this.getFilesInFolderNumber(path || '');
     let progress = 0;
+    onProgress({total, progress});
     return () => {
       progress++;
       onProgress({total, progress});

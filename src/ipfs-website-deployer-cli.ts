@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 
 import program from 'commander';
+import Progress from 'ts-progress';
 import 'colors';
-import { IpfsDeployer } from './ipfs-deployer';
+import { IpfsDeployer, IpfsDeployerProgress } from './ipfs-deployer';
 
 // tslint:disable-next-line
 const packageJson = require('../package.json');
@@ -16,13 +17,14 @@ program
   .option('--protocol <http|https|...>', 'IPFS protocol', 'https')
   .option('--only-hash', 'Returns only root hash.')
   .option('--json', 'Returns full JSON data.')
+  .option('--progress', 'Shows a progress bar.')
   .action(async (folder) => {
     if (typeof folder !== 'string') {
       console.error('Path not defined. Use `--help`,');
       process.exit(1);
     }
-    const {host, port, protocol, onlyHash, json} = program;
-    await deploy(folder, host, +port, protocol, onlyHash, json);
+    const {host, port, protocol, onlyHash, json, progress} = program;
+    await deploy(folder, host, +port, protocol, onlyHash, json, progress);
   })
   .parse(process.argv);
 
@@ -33,6 +35,7 @@ async function deploy(
   protocol?: string,
   onlyHash?: boolean,
   json?: boolean,
+  showProgress?: boolean,
 ) {
   const config = {host, port, protocol};
   Object.keys(config)
@@ -41,8 +44,21 @@ async function deploy(
   if (!onlyHash && !json) {
     console.log(`Deploying files inside "${folder}".`);
   }
+
+  let progressInstance
+  let progressHandler
+  if (showProgress) {
+    progressHandler = ({progress, total}: IpfsDeployerProgress) => {
+      if (!progressInstance) {
+        progressInstance = new Progress(total, 'Progress: {bar.white.cyan.40} | Elapsed: {elapsed.blue} | {percent.green}');
+      } else {
+        progressInstance.update()
+      }
+    }
+  }
+
   const ipfsDeployer = new IpfsDeployer(config);
-  const result = await ipfsDeployer.deployFolder(folder);
+  const result = await ipfsDeployer.deployFolder(folder, progressHandler);
 
   switch (true) {
     case json:
