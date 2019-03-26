@@ -10,13 +10,13 @@ npm i -g ipfs-website-deployer
 ```
 Library installation:
 ```bash
-npm i --save-dev ipfs-website-deployer
+npm i ipfs-website-deployer
 ```
 
 ## CLI usage
 
 ```bash
-ipfs-website-deployer website
+ipfs-website-deployer website-folder
 ```
 
 For more information execute:
