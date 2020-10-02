@@ -1,5 +1,6 @@
 import glob from 'glob';
-import ipfsHttpClient from 'ipfs-http-client';
+import IpfsHttpClient from 'ipfs-http-client';
+const { globSource } = IpfsHttpClient
 
 export interface IpfsDeployerConfig {
   host: string;
@@ -14,7 +15,7 @@ export interface IpfsDeployerFile {
 
 export interface IpfsDeployerNode {
   path: string;
-  hash: string;
+  cid: string;
   size: number;
 }
 
@@ -34,11 +35,19 @@ const defaultConfig: IpfsDeployerConfig = {
   protocol: 'https',
 };
 
+const generatorToArray = async <T>(generator: AsyncGenerator<T>): Promise<T[]> => {
+  const array: T[] = []
+  for await (let value of generator) {
+    array.push(value)
+  }
+  return array
+}
+
 export class IpfsDeployer {
   private ipfs: any;
 
   constructor(config: Partial<IpfsDeployerConfig> = {}) {
-    this.ipfs = new ipfsHttpClient({...defaultConfig, ...config});
+    this.ipfs = new IpfsHttpClient({...defaultConfig, ...config});
   }
 
   async deployFiles(
@@ -46,18 +55,20 @@ export class IpfsDeployer {
     onProgress?: (progress: IpfsDeployerProgress) => void,
   ): Promise<IpfsDeployerResult> {
     const progress = await this.getProgressHandler(undefined, files.length, onProgress);
-    const results = await this.ipfs
-      .add(
+    const resultsGenerator = await this.ipfs
+      .addAll(
         files.map((file) => ({...file, path: `root/${file.path}`})),
         {progress},
       );
-    return this.getResultFromListOfFiles(results);
+    const results = await generatorToArray(resultsGenerator)
+    return this.getResultFromListOfFiles(results as any);
   }
 
   async deployFolder(path: string, onProgress?: (progress: IpfsDeployerProgress) => void): Promise<IpfsDeployerResult> {
     const progress = await this.getProgressHandler(path, undefined, onProgress);
-    const results = await this.ipfs.addFromFs(path, {recursive: true, progress});
-    return this.getResultFromListOfFiles(results);
+    const resultsGenerator = await this.ipfs.addAll(globSource(path, {recursive: true, progress}));
+    const results = await generatorToArray(resultsGenerator)
+    return this.getResultFromListOfFiles(results as any);
   }
 
   private async getProgressHandler(
@@ -92,7 +103,7 @@ export class IpfsDeployer {
         path: file.path.replace(new RegExp(`^${rootFolder}\/?`), './'),
       }));
     const root = nodes.find(({path}) => path === './');
-    const rootHash = (root || {} as any).hash;
+    const rootHash = root?.cid?.toString() || '';
     return {rootHash, nodes};
   }
 }
