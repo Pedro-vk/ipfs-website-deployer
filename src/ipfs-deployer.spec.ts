@@ -1,5 +1,5 @@
-import 'mocha';
 import { assert } from 'chai';
+import 'mocha';
 
 import { IpfsDeployer, IpfsDeployerFile } from './ipfs-deployer';
 
@@ -12,8 +12,8 @@ describe('IpfsDeployer', () => {
     const ipfsDeployer = new IpfsDeployer();
 
     const files: IpfsDeployerFile[] = [
-      {path: 'index.html', content: Buffer.from("Test index", 'utf8')},
-      {path: 'about.html', content: Buffer.from("Test about", 'utf8')},
+      {path: 'index.html', content: Buffer.from('Test index', 'utf8')},
+      {path: 'about.html', content: Buffer.from('Test about', 'utf8')},
     ];
 
     const result = await ipfsDeployer.deployFiles(files);

@@ -1,6 +1,8 @@
 import glob from 'glob';
 import IpfsHttpClient from 'ipfs-http-client';
-const { globSource } = IpfsHttpClient
+const { globSource } = IpfsHttpClient;
+
+import { generatorToArray } from './utils';
 
 export interface IpfsDeployerConfig {
   host: string;
@@ -35,14 +37,6 @@ const defaultConfig: IpfsDeployerConfig = {
   protocol: 'https',
 };
 
-const generatorToArray = async <T>(generator: AsyncGenerator<T>): Promise<T[]> => {
-  const array: T[] = []
-  for await (let value of generator) {
-    array.push(value)
-  }
-  return array
-}
-
 export class IpfsDeployer {
   private ipfs: any;
 
@@ -60,14 +54,14 @@ export class IpfsDeployer {
         files.map((file) => ({...file, path: `root/${file.path}`})),
         {progress},
       );
-    const results = await generatorToArray(resultsGenerator)
+    const results = await generatorToArray(resultsGenerator);
     return this.getResultFromListOfFiles(results as any);
   }
 
   async deployFolder(path: string, onProgress?: (progress: IpfsDeployerProgress) => void): Promise<IpfsDeployerResult> {
     const progress = await this.getProgressHandler(path, undefined, onProgress);
     const resultsGenerator = await this.ipfs.addAll(globSource(path, {recursive: true, progress}));
-    const results = await generatorToArray(resultsGenerator)
+    const results = await generatorToArray(resultsGenerator);
     return this.getResultFromListOfFiles(results as any);
   }
 
