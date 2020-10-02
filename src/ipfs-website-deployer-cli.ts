@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
+import 'colors';
 import program from 'commander';
 import Progress from 'ts-progress';
-import 'colors';
 import { IpfsDeployer, IpfsDeployerProgress } from './ipfs-deployer';
 
 // tslint:disable-next-line
@@ -45,16 +45,19 @@ async function deploy(
     console.log(`Deploying files inside "${folder}".`);
   }
 
-  let progressInstance
-  let progressHandler
+  let progressInstance;
+  let progressHandler;
   if (showProgress) {
     progressHandler = ({progress, total}: IpfsDeployerProgress) => {
       if (!progressInstance) {
-        progressInstance = new Progress(total, 'Progress: {bar.white.cyan.40} | Elapsed: {elapsed.blue} | {percent.green}');
+        progressInstance = new Progress(
+          total,
+          'Progress: {bar.white.cyan.40} | Elapsed: {elapsed.blue} | {percent.green}',
+        );
       } else {
-        progressInstance.update()
+        progressInstance.update();
       }
-    }
+    };
   }
 
   const ipfsDeployer = new IpfsDeployer(config);
@@ -70,7 +73,7 @@ async function deploy(
     default:
       console.log(`Deployed ${String(result.nodes.length).red.bold} nodes.`);
       console.log(`Root hash: ${result.rootHash.green.bold}`);
-      console.log('You can see the website here:\n  ', `https://ipfs.io/ipfs/${result.rootHash}/`.bold)
+      console.log('You can see the website here:\n  ', `https://ipfs.io/ipfs/${result.rootHash}/`.bold);
       break;
   }
 }
