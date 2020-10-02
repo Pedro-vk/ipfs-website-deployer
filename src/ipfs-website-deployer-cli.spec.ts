@@ -1,7 +1,7 @@
-import 'mocha';
 import { assert } from 'chai';
-import { promisify } from 'util';
 import { exec } from 'child_process';
+import 'mocha';
+import { promisify } from 'util';
 
 const run = promisify(exec);
 
