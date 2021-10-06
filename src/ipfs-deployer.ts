@@ -1,6 +1,5 @@
 import glob from 'glob';
-import IpfsHttpClient from 'ipfs-http-client';
-const { globSource } = IpfsHttpClient;
+import { create, globSource } from 'ipfs-http-client';
 
 import { generatorToArray } from './utils';
 
@@ -41,7 +40,7 @@ export class IpfsDeployer {
   private ipfs: any;
 
   constructor(config: Partial<IpfsDeployerConfig> = {}) {
-    this.ipfs = new IpfsHttpClient({...defaultConfig, ...config});
+    this.ipfs = create({...defaultConfig, ...config});
   }
 
   async deployFiles(
@@ -60,7 +59,7 @@ export class IpfsDeployer {
 
   async deployFolder(path: string, onProgress?: (progress: IpfsDeployerProgress) => void): Promise<IpfsDeployerResult> {
     const progress = await this.getProgressHandler(path, undefined, onProgress);
-    const resultsGenerator = await this.ipfs.addAll(globSource(path, {recursive: true, progress}));
+    const resultsGenerator = await this.ipfs.addAll(globSource(path, '**/*'), {progress});
     const results = await generatorToArray(resultsGenerator);
     return this.getResultFromListOfFiles(results as any);
   }
